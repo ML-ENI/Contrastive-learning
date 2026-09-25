@@ -1,0 +1,30 @@
+{
+  "mode": "quick",
+  "seed": 42,
+  "data_dir": "data",
+  "output_dir": "outputs/quick",
+  "train_size": 12000,
+  "val_size": 2000,
+  "test_size": 2000,
+  "label_fractions": [
+    0.01,
+    0.1,
+    1.0
+  ],
+  "batch_size": 256,
+  "num_workers": 0,
+  "feature_dim": 128,
+  "projection_dim": 64,
+  "temperature": 0.5,
+  "learning_rate": 0.001,
+  "weight_decay": 0.0001,
+  "contrastive_epochs": 2,
+  "supervised_epochs": 3,
+  "probe_epochs": 5,
+  "patience": 2,
+  "seeds": [
+    42
+  ],
+  "pca_samples": 1000,
+  "logistic_max_iter": 100
+}
