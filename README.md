@@ -7,21 +7,21 @@ Reproducible PRDL/MLLB assignment comparing a supervised CNN, a small self-super
 Python 3.11+ is supported. From the repository root:
 
 ```bash
-python -m venv .venv
+python3 -m venv .venv
 source .venv/bin/activate       # Windows: .venv\Scripts\activate
-python -m pip install -r requirements.txt
-python -m unittest discover -s tests -v
+python3 -m pip install -r requirements.txt
+python3 -m unittest discover -s tests -v
 ```
 
-On systems where the interpreter is named `python3` (including many macOS installations), use `python3` for the first command. Once the virtual environment is active, both `python` and `python3` normally resolve inside `.venv`. NumPy is intentionally constrained to the 1.x ABI because the compatible PyTorch 2.2 Intel-macOS wheel cannot interoperate with NumPy 2.x.
+On systems where the interpreter is named `python3` (including many macOS installations), use `python3` for the first command. Once the virtual environment is active, both `python` and `python3` normally resolve inside `.venv`. NumPy, SciPy, contourpy, PyTorch, and torchvision are constrained to a mutually compatible ABI range because the PyTorch 2.2 Intel-macOS wheel cannot interoperate with NumPy 2.x.
 
 MNIST is downloaded automatically by `torchvision.datasets.MNIST` into `data/` on the first run. This directory is ignored by Git. The official training set alone supplies training and validation; official test examples are reserved for final metrics.
 
 ## Run
 
 ```bash
-python -m src.run_experiment --mode quick
-python -m src.run_experiment --mode full
+python3 -m src.run_experiment --mode quick
+python3 -m src.run_experiment --mode full
 ```
 
 Quick mode is a pipeline smoke test: one seed, 12,000/2,000/2,000 stratified train/validation/test examples, and short schedules. It must not be used for general conclusions. Full mode uses all 60,000 official training images as a 48,000/12,000 train/validation split, all 10,000 test images, three seeds, and longer schedules. It can require substantial CPU/GPU time. Optional flags include `--seed`, `--output-dir`, `--contrastive-epochs`, `--supervised-epochs`, and `--probe-epochs`.
