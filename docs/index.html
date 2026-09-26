@@ -7816,9 +7816,96 @@ a.anchor-link {
 <div class="jp-OutputArea-child">
 <div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output" data-mime-type="text/html" tabindex="0">
 <style>
-.jp-OutputArea {font-size: 1.05em;}
-table {font-size: 1.05em !important;}
-h1, h2 {color:#17365d;}
+:root {
+  --ink: #172033; --muted: #596579; --navy: #102a43; --blue: #1769aa;
+  --cyan: #27a8d8; --paper: #ffffff; --canvas: #edf2f7; --line: #d8e2ec;
+}
+html { scroll-behavior: smooth; }
+body.jp-Notebook {
+  margin: 0; background: var(--canvas); color: var(--ink);
+  font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 17px; line-height: 1.68;
+}
+body.jp-Notebook main {
+  box-sizing: border-box; max-width: 1120px; margin: 36px auto; padding: 0 0 44px;
+}
+main > .jp-Cell {
+  box-sizing: border-box; margin: 18px 0; padding: 32px 52px;
+  background: var(--paper); border: 1px solid var(--line); border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(16, 42, 67, .055);
+}
+main > .jp-MarkdownCell[id='cell-id=title'] {
+  position: relative; overflow: hidden; padding: 68px 64px; border: 0;
+  background: linear-gradient(130deg, #0b172a 0%, #123e66 62%, #087ca7 100%);
+  box-shadow: 0 18px 46px rgba(12, 45, 74, .25);
+}
+main > .jp-MarkdownCell[id='cell-id=title']::after {
+  content: ''; position: absolute; width: 310px; height: 310px; right: -100px; top: -130px;
+  border: 42px solid rgba(255,255,255,.08); border-radius: 50%;
+}
+main > .jp-MarkdownCell[id='cell-id=title'] h1 {
+  margin: 0 0 12px; color: white; border: 0; font-size: clamp(2.2rem, 5vw, 4rem);
+  line-height: 1.03; letter-spacing: -.045em;
+}
+main > .jp-MarkdownCell[id='cell-id=title'] h2 {
+  max-width: 850px; margin: 0 0 34px; color: #c9efff; font-size: clamp(1.15rem, 2.2vw, 1.65rem);
+  line-height: 1.35; font-weight: 500;
+}
+main > .jp-MarkdownCell[id='cell-id=title'] p { color: #e6f4ff; }
+main > .jp-MarkdownCell[id='cell-id=title'] p strong { color: #8fdfff; }
+main > .jp-MarkdownCell[id='cell-id=title'] blockquote {
+  display: inline-block; margin: 8px 0 0; padding: 10px 16px; color: white;
+  background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.23); border-radius: 999px;
+}
+main > .jp-MarkdownCell[id='cell-id=title'] blockquote p { margin: 0; }
+main > .jp-CodeCell[id='cell-id=setup'] { display: none; }
+.jp-RenderedHTMLCommon h1 {
+  margin: 0 0 24px; padding-bottom: 13px; color: var(--navy);
+  border-bottom: 3px solid #dcecf4; font-size: 2rem; line-height: 1.2; letter-spacing: -.025em;
+}
+.jp-RenderedHTMLCommon h2 {
+  margin: 30px 0 10px; color: var(--blue); font-size: 1.3rem; line-height: 1.3;
+}
+.jp-RenderedHTMLCommon h3 { color: var(--navy); }
+.jp-RenderedHTMLCommon p, .jp-RenderedHTMLCommon li { color: var(--ink); }
+.jp-RenderedHTMLCommon strong { color: #0b4f7c; }
+.jp-RenderedHTMLCommon blockquote {
+  margin: 24px 0; padding: 18px 22px; color: #173f5f; background: #eef8fc;
+  border: 0; border-left: 5px solid var(--cyan); border-radius: 0 10px 10px 0;
+}
+.jp-RenderedHTMLCommon blockquote p { margin: 0; color: inherit; }
+.jp-RenderedHTMLCommon code {
+  padding: .14em .42em; color: #8b2455; background: #f7edf3; border-radius: 5px;
+}
+.jp-RenderedHTMLCommon pre, .jp-RenderedHTMLCommon .highlight {
+  padding: 22px 26px; overflow-x: auto; color: #d8e9f3; background: #102a43;
+  border-radius: 12px; box-shadow: inset 0 0 0 1px rgba(255,255,255,.06);
+}
+.jp-RenderedHTMLCommon pre code { padding: 0; color: inherit; background: transparent; }
+.jp-RenderedHTMLCommon table {
+  width: 100%; margin: 22px 0; border: 1px solid var(--line); border-collapse: separate;
+  border-spacing: 0; border-radius: 11px; overflow: hidden; font-size: .96rem !important;
+}
+.jp-RenderedHTMLCommon thead th { padding: 13px 16px; color: white; background: var(--navy); border: 0; }
+.jp-RenderedHTMLCommon tbody td, .jp-RenderedHTMLCommon tbody th { padding: 12px 16px; border-color: #e5edf3; }
+.jp-RenderedHTMLCommon tbody tr:nth-child(even) { background: #f6f9fb; }
+.jp-RenderedImage { text-align: center; }
+.jp-RenderedImage img {
+  display: block; max-width: 100%; height: auto; margin: 12px auto 4px;
+  border: 1px solid #d9e4eb; border-radius: 12px; box-shadow: 0 10px 28px rgba(20, 52, 76, .10);
+}
+.jp-OutputArea { font-size: 1.02em; }
+.jp-OutputArea-output { max-width: 100%; }
+.anchor-link { opacity: 0; color: var(--cyan) !important; text-decoration: none !important; }
+h1:hover .anchor-link, h2:hover .anchor-link { opacity: .55; }
+@media (max-width: 760px) {
+  body.jp-Notebook { font-size: 15px; }
+  body.jp-Notebook main { margin: 0; }
+  main > .jp-Cell { margin: 10px; padding: 24px 20px; border-radius: 12px; }
+  main > .jp-MarkdownCell[id='cell-id=title'] { padding: 46px 26px; }
+  .jp-RenderedHTMLCommon h1 { font-size: 1.65rem; }
+  .jp-RenderedHTMLCommon table { display: block; overflow-x: auto; white-space: nowrap; }
+}
 </style>
 </div>
 </div>
@@ -7952,88 +8039,88 @@ h1, h2 {color:#17365d;}
 <div class="jp-OutputArea-child">
 <div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output" data-mime-type="text/html" tabindex="0">
 <style type="text/css">
-#T_8da93_row0_col0 {
+#T_ef22a_row0_col0 {
   background-color: #9fcae1;
   color: #000000;
 }
-#T_8da93_row0_col1 {
+#T_ef22a_row0_col1 {
   background-color: #56a0ce;
   color: #f1f1f1;
 }
-#T_8da93_row0_col2 {
+#T_ef22a_row0_col2 {
   background-color: #08306b;
   color: #f1f1f1;
 }
-#T_8da93_row1_col0 {
+#T_ef22a_row1_col0 {
   background-color: #abd0e6;
   color: #000000;
 }
-#T_8da93_row1_col1 {
+#T_ef22a_row1_col1 {
   background-color: #7cb7da;
   color: #000000;
 }
-#T_8da93_row1_col2 {
+#T_ef22a_row1_col2 {
   background-color: #2d7dbb;
   color: #f1f1f1;
 }
-#T_8da93_row2_col0 {
+#T_ef22a_row2_col0 {
   background-color: #f7fbff;
   color: #000000;
 }
-#T_8da93_row2_col1 {
+#T_ef22a_row2_col1 {
   background-color: #dfebf7;
   color: #000000;
 }
-#T_8da93_row2_col2 {
+#T_ef22a_row2_col2 {
   background-color: #d6e5f4;
   color: #000000;
 }
-#T_8da93_row3_col0 {
+#T_ef22a_row3_col0 {
   background-color: #1460a8;
   color: #f1f1f1;
 }
-#T_8da93_row3_col1 {
+#T_ef22a_row3_col1 {
   background-color: #08458a;
   color: #f1f1f1;
 }
-#T_8da93_row3_col2 {
+#T_ef22a_row3_col2 {
   background-color: #083a7a;
   color: #f1f1f1;
 }
 </style>
-<table id="T_8da93">
+<table id="T_ef22a">
 <thead>
 <tr>
 <th class="index_name level0">label_fraction</th>
-<th class="col_heading level0 col0" id="T_8da93_level0_col0">1 %</th>
-<th class="col_heading level0 col1" id="T_8da93_level0_col1">10 %</th>
-<th class="col_heading level0 col2" id="T_8da93_level0_col2">100 %</th>
+<th class="col_heading level0 col0" id="T_ef22a_level0_col0">1 %</th>
+<th class="col_heading level0 col1" id="T_ef22a_level0_col1">10 %</th>
+<th class="col_heading level0 col2" id="T_ef22a_level0_col2">100 %</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<th class="row_heading level0 row0" id="T_8da93_level0_row0">CNN supervisada</th>
-<td class="data row0 col0" id="T_8da93_row0_col0">41.20 %</td>
-<td class="data row0 col1" id="T_8da93_row0_col1">57.40 %</td>
-<td class="data row0 col2" id="T_8da93_row0_col2">94.20 %</td>
+<th class="row_heading level0 row0" id="T_ef22a_level0_row0">CNN supervisada</th>
+<td class="data row0 col0" id="T_ef22a_row0_col0">41.20 %</td>
+<td class="data row0 col1" id="T_ef22a_row0_col1">57.40 %</td>
+<td class="data row0 col2" id="T_ef22a_row0_col2">94.20 %</td>
 </tr>
 <tr>
-<th class="row_heading level0 row1" id="T_8da93_level0_row1">SimCLR + linear probe</th>
-<td class="data row1 col0" id="T_8da93_row1_col0">38.20 %</td>
-<td class="data row1 col1" id="T_8da93_row1_col1">48.50 %</td>
-<td class="data row1 col2" id="T_8da93_row1_col2">69.45 %</td>
+<th class="row_heading level0 row1" id="T_ef22a_level0_row1">SimCLR + linear probe</th>
+<td class="data row1 col0" id="T_ef22a_row1_col0">38.20 %</td>
+<td class="data row1 col1" id="T_ef22a_row1_col1">48.50 %</td>
+<td class="data row1 col2" id="T_ef22a_row1_col2">69.45 %</td>
 </tr>
 <tr>
-<th class="row_heading level0 row2" id="T_8da93_level0_row2">Encoder aleatorio + probe</th>
-<td class="data row2 col0" id="T_8da93_row2_col0">9.90 %</td>
-<td class="data row2 col1" id="T_8da93_row2_col1">20.40 %</td>
-<td class="data row2 col2" id="T_8da93_row2_col2">24.25 %</td>
+<th class="row_heading level0 row2" id="T_ef22a_level0_row2">Encoder aleatorio + probe</th>
+<td class="data row2 col0" id="T_ef22a_row2_col0">9.90 %</td>
+<td class="data row2 col1" id="T_ef22a_row2_col1">20.40 %</td>
+<td class="data row2 col2" id="T_ef22a_row2_col2">24.25 %</td>
 </tr>
 <tr>
-<th class="row_heading level0 row3" id="T_8da93_level0_row3">Regresión logística</th>
-<td class="data row3 col0" id="T_8da93_row3_col0">78.40 %</td>
-<td class="data row3 col1" id="T_8da93_row3_col1">87.35 %</td>
-<td class="data row3 col2" id="T_8da93_row3_col2">90.80 %</td>
+<th class="row_heading level0 row3" id="T_ef22a_level0_row3">Regresión logística</th>
+<td class="data row3 col0" id="T_ef22a_row3_col0">78.40 %</td>
+<td class="data row3 col1" id="T_ef22a_row3_col1">87.35 %</td>
+<td class="data row3 col2" id="T_ef22a_row3_col2">90.80 %</td>
 </tr>
 </tbody>
 </table>
@@ -8160,21 +8247,16 @@ h1, h2 {color:#17365d;}
 <div class="jp-OutputArea jp-Cell-outputArea">
 <div class="jp-OutputArea-child">
 <div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-OutputArea-output" data-mime-type="text/markdown" tabindex="0">
-<h1 id="12.-Conclusiones">12. Conclusiones<a class="anchor-link" href="#12.-Conclusiones">¶</a></h1>
-</div>
-</div>
-<div class="jp-OutputArea-child">
-<div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-OutputArea-output" data-mime-type="text/markdown" tabindex="0">
-<ol>
-<li><p>SimCLR produjo representaciones linealmente más útiles que un encoder aleatorio en los tres presupuestos; la mejora media observada fue <strong>3386.7 puntos de accuracy</strong>.</p>
-</li>
-<li><p>La separación entre pares positivos y negativos aumentó después del preentrenamiento.</p>
-</li>
-<li><p>Aprender una buena representación no garantiza superar al mejor clasificador final.</p>
-</li>
-<li><p>Estos resultados proceden del modo <strong>quick</strong>: son evidencia preliminar, no la conclusión final.</p>
-</li>
-</ol>
+<h1 id="12.-Conclusiones-e-interpretaci%C3%B3n-de-los-resultados">12. Conclusiones e interpretación de los resultados<a class="anchor-link" href="#12.-Conclusiones-e-interpretaci%C3%B3n-de-los-resultados">¶</a></h1><h2 id="Los-resultados-son-internamente-coherentes">Los resultados son internamente coherentes<a class="anchor-link" href="#Los-resultados-son-internamente-coherentes">¶</a></h2><p>Al aumentar las etiquetas, todos los modelos basados en la CNN mejoran: la CNN supervisada pasa de <strong>41.20 %</strong> a <strong>57.40 %</strong> y <strong>94.20 %</strong>; SimCLR + linear probe pasa de <strong>38.20 %</strong> a <strong>48.50 %</strong> y <strong>69.45 %</strong>. Esta tendencia monotónica indica que los subconjuntos etiquetados y la evaluación se comportan de forma razonable.</p>
+<h2 id="SimCLR-s%C3%AD-aprendi%C3%B3-una-representaci%C3%B3n-%C3%BAtil">SimCLR sí aprendió una representación útil<a class="anchor-link" href="#SimCLR-s%C3%AD-aprendi%C3%B3-una-representaci%C3%B3n-%C3%BAtil">¶</a></h2><p>Frente al mismo encoder aleatorio y congelado, SimCLR mejora <strong>28.3</strong>, <strong>28.1</strong> y <strong>45.2 puntos</strong> con 1 %, 10 % y 100 % de etiquetas. La mejora media correcta es <strong>33.9 puntos</strong>, no miles de puntos. Además, la loss contrastiva baja de <strong>4.929</strong> a <strong>4.604</strong> y la separación coseno positivo–negativo aumenta de <strong>0.006</strong> a <strong>0.372</strong>. Las tres evidencias apuntan en la misma dirección: el preentrenamiento no es equivalente a dejar la red aleatoria.</p>
+<h2 id="%C2%BFPor-qu%C3%A9-Logistic-Regression-gana-con-pocas-etiquetas?">¿Por qué Logistic Regression gana con pocas etiquetas?<a class="anchor-link" href="#%C2%BFPor-qu%C3%A9-Logistic-Regression-gana-con-pocas-etiquetas?">¶</a></h2><p>Obtiene <strong>78.40 %</strong>, <strong>87.35 %</strong> y <strong>90.80 %</strong>. Esto es plausible en MNIST: las imágenes están centradas, alineadas, tienen fondo uniforme y la posición de cada píxel es directamente informativa. Un modelo lineal tiene pocos parámetros y puede ser muy eficiente con pocos ejemplos. No demuestra que sea superior en problemas visuales más complejos.</p>
+<h2 id="Los-modelos-neuronales-est%C3%A1n-infraentrenados-en-quick">Los modelos neuronales están infraentrenados en <code>quick</code><a class="anchor-link" href="#Los-modelos-neuronales-est%C3%A1n-infraentrenados-en-quick">¶</a></h2><p>SimCLR solo recibe <strong>2 épocas</strong> de preentrenamiento y la CNN supervisada parte de cero con un calendario muy corto. El <strong>57.40 %</strong> de la CNN con 1.200 etiquetas no representa su capacidad final: su validation accuracy seguía aumentando en la última época. SimCLR supera ampliamente al encoder aleatorio, pero dos épocas no bastan para esperar una representación madura.</p>
+<h2 id="La-arquitectura-tambi%C3%A9n-influye">La arquitectura también influye<a class="anchor-link" href="#La-arquitectura-tambi%C3%A9n-influye">¶</a></h2><p>El encoder termina con <code>AdaptiveAvgPool2d(1)</code>, que comprime la distribución espacial en un vector global. Logistic Regression conserva los 784 píxeles y sus posiciones. Esto puede favorecer al baseline lineal en MNIST, aunque la comparación principal SimCLR–aleatorio sigue siendo justa porque ambos utilizan exactamente el mismo encoder.</p>
+<h2 id="Accuracy-y-F1-cuentan-una-historia-compatible">Accuracy y F1 cuentan una historia compatible<a class="anchor-link" href="#Accuracy-y-F1-cuentan-una-historia-compatible">¶</a></h2><p>En los modelos débiles, F1 macro es menor que accuracy porque las matrices de confusión muestran que algunas clases se predicen mucho mejor que otras. El encoder aleatorio, por ejemplo, alcanza <strong>24.25 %</strong> de accuracy con todas las etiquetas, pero su F1 macro es mucho menor. Esto es compatible con un clasificador que se concentra en unas pocas clases; no parece un fallo del cálculo de métricas.</p>
+<h2 id="Conclusi%C3%B3n-respaldada-por-los-datos">Conclusión respaldada por los datos<a class="anchor-link" href="#Conclusi%C3%B3n-respaldada-por-los-datos">¶</a></h2><blockquote>
+<p>En el modo <code>quick</code>, SimCLR aprendió sin etiquetas una representación claramente más útil que la de un encoder aleatorio. Sin embargo, no superó a la CNN supervisada ni a Logistic Regression. Por tanto, esta demo demuestra que el pipeline contrastivo funciona, pero <strong>no demuestra que SimCLR reduzca la necesidad de etiquetas en general</strong>.</p>
+</blockquote>
+<p>No debemos afirmar que "SimCLR funciona mejor con pocas etiquetas": con 1 % obtiene <strong>38.20 %</strong>, frente a <strong>41.20 %</strong> de la CNN y <strong>78.40 %</strong> de Logistic Regression. Para responder la hipótesis principal con rigor harían falta el modo completo, más preentrenamiento y varias semillas.</p>
 </div>
 </div>
 </div>
