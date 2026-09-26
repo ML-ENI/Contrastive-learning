@@ -6,7 +6,7 @@ from PIL import Image
 from torch.utils.data import Dataset
 
 from src.data import ContrastiveDataset, make_splits
-from src.evaluation import metric_dict
+from src.evaluation import embedding_similarity_samples, metric_dict
 from src.losses import nt_xent_loss
 from src.models import Classifier, CompactEncoder, SimCLR, make_linear_probe
 
@@ -72,6 +72,21 @@ class PipelineTests(unittest.TestCase):
         self.assertAlmostEqual(metrics["accuracy"], 4 / 6)
         self.assertAlmostEqual(metrics["recall_macro"], (0.5 + 1.0 + 0.5) / 3)
         self.assertEqual(np.asarray(metrics["confusion_matrix"]).shape, (10, 10))
+
+    def test_similarity_diagnostic_matches_identical_views(self):
+        from torch.utils.data import DataLoader, TensorDataset
+        views = torch.eye(4).reshape(4, 1, 2, 2)
+        diagnostic = embedding_similarity_samples(
+            torch.nn.Flatten(), DataLoader(TensorDataset(views, views), batch_size=4),
+            torch.device("cpu"), max_batches=1
+        )
+        self.assertTrue(np.allclose(diagnostic["positive"], 1.0))
+        self.assertTrue(np.isfinite(diagnostic["negative"]).all())
+
+    def test_update_budget_expands_small_label_training(self):
+        from src.training import epochs_for_updates, labelled_batch_size
+        self.assertEqual(labelled_batch_size(120, 128), 16)
+        self.assertEqual(epochs_for_updates(3, loader_length=8, min_updates=60), 8)
 
     def test_training_interfaces_cannot_receive_test_loader_for_selection(self):
         # Model-selection functions expose train/validation only; test evaluation is separate.

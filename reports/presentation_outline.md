@@ -10,6 +10,7 @@
 
 - Supervised CNN: encoder + class head, cross-entropy.
 - Small SimCLR: two moderate views → shared encoder → MLP → NT-Xent; discard MLP, freeze encoder, fit linear probe.
+- Frozen random encoder + the same probe isolates whether pretraining learned useful representations.
 - Normalized-pixel logistic regression as a simple reference.
 
 ## 3. Protocol and safeguards — 60 s
@@ -26,9 +27,10 @@
 
 ## 5. Representation analysis — 60 s
 
-- Show PCA before/after pretraining.
+- Show positive/negative cosine similarity and nearest-neighbor retrieval before/after pretraining.
+- Use PCA as a complementary 2D view.
 - Colours are labels used only for post-hoc visualization.
-- PCA separation is suggestive, while linear-probe test metrics are the quantitative measure.
+- The SimCLR-versus-random probe difference is the direct quantitative pretraining control.
 
 ## 6. Conclusions and limitations — 60 s
 

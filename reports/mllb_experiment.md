@@ -6,7 +6,7 @@ Deep classifiers normally require labels, while self-supervised contrastive lear
 
 ## Objectives
 
-We compare (A) a compact supervised CNN, (B) the identical encoder pretrained without labels and evaluated by a frozen linear probe, and (C) multinomial logistic regression on normalized pixels. All methods receive identical labelled example IDs within each seed and budget.
+We compare (A) a compact supervised CNN, (B) the identical encoder pretrained without labels and evaluated by a frozen linear probe, and (C) multinomial logistic regression on normalized pixels. A frozen randomly initialized encoder plus the same linear probe is included as a representation-learning control. All methods receive identical labelled example IDs within each seed and budget.
 
 ## Theoretical Background
 
@@ -24,6 +24,8 @@ MNIST contains 28×28 grayscale images in ten digit classes. The quick protocol 
 
 The CNN encoder uses three convolutional blocks and a 128-dimensional representation. The supervised model adds a ten-class layer. SimCLR adds a two-layer MLP projection head and optimizes NT-Xent ($\tau=0.5$) from two moderate affine/noise views, with no flips. Its encoder is frozen for linear probing. Logistic regression tunes $C\in\{0.1,1,10\}$ on validation data. The contrastive method has additional access to every unlabelled training image during pretraining, so labelled budgets are matched but compute and image exposure are not equivalent.
 
+The random-encoder probe uses the same frozen architecture and identical probe optimization, isolating the effect of contrastive pretraining. Small labelled subsets use adaptive batch sizes and a minimum optimizer-update budget so that 1% and 10% conditions are not evaluated after only a handful of gradient steps.
+
 ## Experimental Setup
 
 Mode: **quick**. Seeds actually executed: **[42]**. AdamW is used for neural models. Early stopping and hyperparameter selection use validation data only; test predictions are computed after training decisions. This is a smoke-test run and must not be interpreted as a general empirical conclusion. The full three-seed experiment was not executed in the CPU-only development environment.
@@ -33,32 +35,47 @@ Mode: **quick**. Seeds actually executed: **[42]**. AdamW is used for neural mod
 The table below is generated from the saved metrics; `n/a` standard deviations mean only one seed was run.
 
 <!-- BEGIN GENERATED TABLE -->
-| method              |   label_fraction |   accuracy |   precision_macro |   recall_macro |   f1_macro |
-|:--------------------|-----------------:|-----------:|------------------:|---------------:|-----------:|
-| Logistic regression |           0.0100 |     0.7840 |            0.7859 |         0.7790 |     0.7786 |
-| Logistic regression |           0.1000 |     0.8735 |            0.8735 |         0.8715 |     0.8717 |
-| Logistic regression |           1.0000 |     0.9080 |            0.9071 |         0.9062 |     0.9063 |
-| SimCLR linear probe |           0.0100 |     0.0880 |            0.0395 |         0.0883 |     0.0411 |
-| SimCLR linear probe |           0.1000 |     0.3450 |            0.4188 |         0.3341 |     0.2644 |
-| SimCLR linear probe |           1.0000 |     0.6460 |            0.6495 |         0.6388 |     0.6309 |
-| Supervised CNN      |           0.0100 |     0.1015 |            0.0268 |         0.1005 |     0.0203 |
-| Supervised CNN      |           0.1000 |     0.1175 |            0.0916 |         0.1040 |     0.0284 |
-| Supervised CNN      |           1.0000 |     0.9445 |            0.9462 |         0.9444 |     0.9439 |
+| method               |   label_fraction |   accuracy |   precision_macro |   recall_macro |   f1_macro |
+|:---------------------|-----------------:|-----------:|------------------:|---------------:|-----------:|
+| Logistic regression  |           0.0100 |     0.7840 |            0.7859 |         0.7790 |     0.7786 |
+| Logistic regression  |           0.1000 |     0.8735 |            0.8735 |         0.8715 |     0.8717 |
+| Logistic regression  |           1.0000 |     0.9080 |            0.9071 |         0.9062 |     0.9063 |
+| Random encoder probe |           0.0100 |     0.0990 |            0.0264 |         0.1031 |     0.0230 |
+| Random encoder probe |           0.1000 |     0.2040 |            0.0595 |         0.1904 |     0.0849 |
+| Random encoder probe |           1.0000 |     0.2425 |            0.0993 |         0.2304 |     0.1160 |
+| SimCLR linear probe  |           0.0100 |     0.3820 |            0.3896 |         0.3744 |     0.3482 |
+| SimCLR linear probe  |           0.1000 |     0.4850 |            0.5144 |         0.4761 |     0.4323 |
+| SimCLR linear probe  |           1.0000 |     0.6945 |            0.6950 |         0.6872 |     0.6792 |
+| Supervised CNN       |           0.0100 |     0.4120 |            0.5081 |         0.4038 |     0.3602 |
+| Supervised CNN       |           0.1000 |     0.5740 |            0.6793 |         0.5636 |     0.5494 |
+| Supervised CNN       |           1.0000 |     0.9420 |            0.9473 |         0.9412 |     0.9416 |
 <!-- END GENERATED TABLE -->
 
 ![Method comparison](../outputs/quick/figures/method_comparison.png)
+
+![Direct pretraining control](../outputs/quick/figures/simclr_pretraining_gain.png)
+
+![Positive and mismatched view similarities](../outputs/quick/figures/positive_negative_similarity.png)
 
 Observed outcomes:
 
 - At 1% labels, the highest observed mean test accuracy was 0.7840 (Logistic regression). This is an observation, not proof of superiority.
 - At 10% labels, the highest observed mean test accuracy was 0.8735 (Logistic regression). This is an observation, not proof of superiority.
-- At 100% labels, the highest observed mean test accuracy was 0.9445 (Supervised CNN). This is an observation, not proof of superiority.
+- At 100% labels, the highest observed mean test accuracy was 0.9420 (Supervised CNN). This is an observation, not proof of superiority.
 
-Confusion matrices and PCA views are stored under `outputs/quick/figures`. PCA colours use labels only after training for visualization.
+Representation-learning control:
+
+- At 1% labels, SimCLR minus the random-encoder probe was +0.2830 accuracy. This isolates the contribution of pretraining.
+- At 10% labels, SimCLR minus the random-encoder probe was +0.2810 accuracy. This isolates the contribution of pretraining.
+- At 100% labels, SimCLR minus the random-encoder probe was +0.4520 accuracy. This isolates the contribution of pretraining.
+
+Across the executed seeds, the mean positive-minus-mismatched cosine gap was 0.0064 for the random encoder and 0.3719 after SimCLR.
+
+Confusion matrices, PCA views, positive-versus-negative cosine distributions, and nearest-neighbor retrievals are stored under `outputs/quick/figures`. Labels in PCA and retrieval titles are used only after training for interpretation.
 
 ## Discussion
 
-Differences across label budgets should be interpreted jointly with the supervised validation curves, contrastive loss, confusion matrices, and PCA geometry. A higher linear-probe score would support the claim that pretraining exposed linearly useful structure; a lower score would show that this particular objective, augmentation policy, architecture, and training budget did not beat direct supervision. It would not refute contrastive learning in general. The quick run is solely an integration check.
+Differences across label budgets should be interpreted jointly with the supervised validation curves, contrastive loss, cosine diagnostic, neighbor retrieval, confusion matrices, and PCA geometry. A SimCLR probe above the identical random probe supports the claim that pretraining exposed linearly useful structure; it does not imply that the representation beats end-to-end supervision. A lower score would be evidence about this objective, augmentation policy, architecture, and training budget, not a general refutation of contrastive learning. The quick run is solely an integration check.
 
 ## Limitations
 

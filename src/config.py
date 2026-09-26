@@ -14,6 +14,7 @@ class ExperimentConfig:
     test_size: int = 2_000
     label_fractions: tuple[float, ...] = (0.01, 0.10, 1.0)
     batch_size: int = 256
+    labelled_batch_size: int = 128
     num_workers: int = 0
     feature_dim: int = 128
     projection_dim: int = 64
@@ -24,9 +25,14 @@ class ExperimentConfig:
     supervised_epochs: int = 3
     probe_epochs: int = 5
     patience: int = 2
+    min_label_updates: int = 60
     seeds: tuple[int, ...] = (42,)
     pca_samples: int = 1_000
+    similarity_batches: int = 8
+    retrieval_samples: int = 1_000
     logistic_max_iter: int = 100
+    reuse_pretraining: bool = False
+    reuse_logistic: bool = False
 
     @classmethod
     def for_mode(cls, mode: str, output_dir: str | None = None) -> "ExperimentConfig":
@@ -40,10 +46,12 @@ class ExperimentConfig:
                 val_size=12_000,
                 test_size=10_000,
                 batch_size=512,
-                contrastive_epochs=20,
-                supervised_epochs=20,
+                labelled_batch_size=128,
+                contrastive_epochs=30,
+                supervised_epochs=30,
                 probe_epochs=30,
                 patience=5,
+                min_label_updates=300,
                 seeds=(42, 123, 2024),
                 logistic_max_iter=1_000,
             )

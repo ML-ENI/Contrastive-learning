@@ -1,6 +1,6 @@
 # MNIST: supervised vs. contrastive learning
 
-Reproducible PRDL/MLLB assignment comparing a supervised CNN, a small self-supervised SimCLR encoder with a frozen linear probe, and logistic regression at 1%, 10%, and 100% labelled-data budgets. The neural methods use the same compact encoder. SimCLR sees all training images without labels during pretraining, so its image exposure and compute are intentionally documented as unequal to direct supervision.
+Reproducible PRDL/MLLB assignment comparing a supervised CNN, a small self-supervised SimCLR encoder with a frozen linear probe, a frozen random-encoder probe, and logistic regression at 1%, 10%, and 100% labelled-data budgets. The neural methods use the same compact encoder. The random probe isolates the value of contrastive pretraining. SimCLR sees all training images without labels during pretraining, so its image exposure and compute are intentionally documented as unequal to direct supervision.
 
 ## Setup
 
@@ -31,18 +31,32 @@ For CUDA, install the matching PyTorch build from the official PyTorch selector 
 ## Experimental safeguards
 
 - Split and labelled-example IDs are saved under `outputs/<mode>/`.
-- Labelled IDs are identical across the three methods for each seed/budget.
+- Labelled IDs are identical across all supervised heads/baselines for each seed/budget.
+- Small labelled budgets use adaptive batch sizes and a minimum number of optimizer updates; 1% is not evaluated after only a few gradient steps.
 - `ContrastiveDataset` returns exactly two views and discards the source label.
 - Moderate rotation, translation, scale, and Gaussian noise are used; flips are excluded.
 - Early stopping and logistic-regression `C` selection use validation only.
 - Test data enters only final prediction and post-training PCA visualization.
 - Standard deviations are reported only when multiple seeds were actually run.
+- SimCLR is compared against an otherwise identical frozen random encoder.
 
 ## Outputs
 
-Each run writes its configuration, dependency versions, split IDs, metrics, summary, histories, checkpoints, and PNG figures to `outputs/<mode>/`. Tables in `reports/results_table.md`, the English report, and the presentation outline are regenerated from the real metrics. Checkpoints and downloaded datasets are ignored by Git.
+Each run writes its configuration, dependency versions, split IDs, metrics, summary, histories, checkpoints, and PNG figures to `outputs/<mode>/`. Contrastive-specific outputs include positive/negative cosine distributions, nearest-neighbor retrieval before/after pretraining, PCA, and the paired SimCLR-minus-random-probe gain. Tables in `reports/results_table.md`, the English report, and the presentation outline are regenerated from real metrics. Checkpoints and downloaded datasets are ignored by Git.
 
-The notebook [notebooks/contrastive_learning_mnist.ipynb](notebooks/contrastive_learning_mnist.ipynb) reuses the Python modules and is suitable for VS Code or Colab. In Colab, upload/clone the repository, change into its root, install requirements, then run the same module command.
+Two notebooks serve different purposes:
+
+- [notebooks/contrastive_learning_mnist.ipynb](notebooks/contrastive_learning_mnist.ipynb) is the detailed team notebook: theory, implementation walkthrough, execution controls, diagnostics, and tests.
+- [notebooks/presentation_contrastive_learning_mnist.ipynb](notebooks/presentation_contrastive_learning_mnist.ipynb) is the concise 5–10 minute demo: slide metadata, hidden helper code, and the real saved `quick` results with an explicit warning that they are preliminary.
+
+Both reuse the Python modules and work in VS Code or Colab. In Colab, upload or clone the repository, change into its root, and install the requirements first.
+
+The static GitHub Pages demo is generated from the executed presentation notebook at `docs/index.html`. It retains the notebook appearance and embedded outputs but hides helper-code inputs. Regenerate it after updating quick results with:
+
+```bash
+jupyter nbconvert notebooks/presentation_contrastive_learning_mnist.ipynb \
+  --to html --no-input --output index.html --output-dir docs
+```
 
 ## Project map
 

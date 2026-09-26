@@ -82,6 +82,29 @@ def plot_comparison(results: pd.DataFrame, output: Path) -> None:
     _save(fig, output / "method_comparison.png")
 
 
+def plot_pretraining_gain(results: pd.DataFrame, output: Path) -> None:
+    """Paired accuracy gain of SimCLR features over identical random features."""
+    required = {"SimCLR linear probe", "Random encoder probe"}
+    if not required.issubset(set(results.method)):
+        return
+    paired = results[results.method.isin(required)].pivot_table(
+        index=["seed", "label_fraction"], columns="method", values="accuracy"
+    ).dropna()
+    paired["gain"] = paired["SimCLR linear probe"] - paired["Random encoder probe"]
+    summary = paired.groupby("label_fraction")["gain"].agg(["mean", "std"]).reset_index()
+    fig, ax = plt.subplots(figsize=(7, 4))
+    colours = ["#2ca02c" if value >= 0 else "#d62728" for value in summary["mean"]]
+    ax.bar(summary.label_fraction * 100, summary["mean"],
+           yerr=summary["std"].fillna(0), width=[.7, 3, 12][:len(summary)],
+           color=colours, alpha=.8, capsize=4)
+    ax.axhline(0, color="black", linewidth=1)
+    ax.set(xlabel="Labelled training data (%)", ylabel="Accuracy gain",
+           title="Effect of SimCLR pretraining vs. a random frozen encoder",
+           xticks=summary.label_fraction * 100)
+    ax.grid(axis="y", alpha=.25)
+    _save(fig, output / "simclr_pretraining_gain.png")
+
+
 def plot_confusion(matrix: np.ndarray, title: str, path: Path) -> None:
     fig, ax = plt.subplots(figsize=(6, 5))
     image = ax.imshow(matrix, cmap="Blues")
@@ -103,3 +126,48 @@ def plot_pca(before: np.ndarray, after: np.ndarray, labels: np.ndarray, path: Pa
         ax.set(title=title, xlabel="PC1", ylabel="PC2")
     fig.colorbar(scatter, ax=axes, label="Digit", ticks=range(10), fraction=.025)
     _save(fig, path)
+
+
+def plot_similarity(before: dict[str, np.ndarray], after: dict[str, np.ndarray], path: Path) -> None:
+    fig, axes = plt.subplots(1, 2, figsize=(12, 4), sharex=True, sharey=True)
+    bins = np.linspace(-1, 1, 35)
+    for values, title, ax in ((before, "Random encoder", axes[0]),
+                              (after, "After SimCLR pretraining", axes[1])):
+        ax.hist(values["negative"], bins=bins, alpha=.65, density=True, label="mismatched views")
+        ax.hist(values["positive"], bins=bins, alpha=.65, density=True, label="positive views")
+        gap = values["positive"].mean() - values["negative"].mean()
+        ax.set(title=f"{title}\nmean positive-negative gap = {gap:.3f}",
+               xlabel="Cosine similarity", ylabel="Density")
+        ax.legend()
+    _save(fig, path)
+
+
+def plot_nearest_neighbors(before: np.ndarray, after: np.ndarray, images: np.ndarray,
+                           labels: np.ndarray, path: Path, queries: int = 5,
+                           neighbors: int = 4) -> None:
+    """Compare cosine-nearest retrieval without using labels to choose neighbors."""
+    query_ids = np.linspace(0, len(images) - 1, queries, dtype=int)
+    fig, axes = plt.subplots(queries * 2, neighbors + 1,
+                             figsize=(2 * (neighbors + 1), 2 * queries * 2))
+    for block, (embedding, name) in enumerate(((before, "Random encoder"),
+                                                (after, "SimCLR encoder"))):
+        normalized = embedding / np.clip(np.linalg.norm(embedding, axis=1, keepdims=True), 1e-12, None)
+        similarities = normalized @ normalized.T
+        np.fill_diagonal(similarities, -np.inf)
+        for row, query in enumerate(query_ids):
+            axis_row = block * queries + row
+            found = np.argsort(similarities[query])[-neighbors:][::-1]
+            axes[axis_row, 0].imshow(images[query], cmap="gray")
+            axes[axis_row, 0].set_title(f"{name}\nquery: {labels[query]}", fontsize=8)
+            for column, neighbor in enumerate(found, start=1):
+                axes[axis_row, column].imshow(images[neighbor], cmap="gray")
+                axes[axis_row, column].set_title(
+                    f"label {labels[neighbor]}\ncos={similarities[query, neighbor]:.2f}", fontsize=8)
+            for ax in axes[axis_row]:
+                ax.axis("off")
+    fig.suptitle("Nearest neighbors in embedding space (labels shown only for interpretation)",
+                 fontsize=14)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    fig.tight_layout(rect=(0, 0, 1, .975), h_pad=1.2)
+    fig.savefig(path, dpi=160, bbox_inches="tight")
+    plt.close(fig)

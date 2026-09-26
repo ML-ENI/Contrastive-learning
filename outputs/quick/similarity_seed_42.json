@@ -1,0 +1,9 @@
+{
+  "seed": 42,
+  "random_positive_mean": 0.9987830519676208,
+  "random_negative_mean": 0.9924218058586121,
+  "pretrained_positive_mean": 0.9869990348815918,
+  "pretrained_negative_mean": 0.6150931715965271,
+  "random_gap": 0.006361246109008789,
+  "pretrained_gap": 0.3719058632850647
+}
