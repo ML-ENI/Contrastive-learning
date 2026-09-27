@@ -1,0 +1,36 @@
+{
+  "mode": "full",
+  "seed": 42,
+  "data_dir": "data",
+  "output_dir": "outputs/full_reduced",
+  "train_size": 48000,
+  "val_size": 12000,
+  "test_size": 10000,
+  "label_fractions": [
+    0.01,
+    0.1,
+    1.0
+  ],
+  "batch_size": 512,
+  "labelled_batch_size": 128,
+  "num_workers": 0,
+  "feature_dim": 128,
+  "projection_dim": 64,
+  "temperature": 0.5,
+  "learning_rate": 0.001,
+  "weight_decay": 0.0001,
+  "contrastive_epochs": 8,
+  "supervised_epochs": 10,
+  "probe_epochs": 10,
+  "patience": 5,
+  "min_label_updates": 300,
+  "seeds": [
+    42
+  ],
+  "pca_samples": 1000,
+  "similarity_batches": 8,
+  "retrieval_samples": 1000,
+  "logistic_max_iter": 1000,
+  "reuse_pretraining": false,
+  "reuse_logistic": false
+}

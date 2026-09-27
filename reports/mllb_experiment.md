@@ -18,7 +18,7 @@ An embedding space is useful when semantically related inputs admit a simple dow
 
 ## Dataset
 
-MNIST contains 28×28 grayscale images in ten digit classes. The quick protocol draws stratified, disjoint subsets of 12,000 training and 2,000 validation examples from the official training set and 2,000 examples from the official test set. The test set is untouched until final evaluation. Labels in contrastive pretraining are used only to construct splits and labelled budgets; batches contain two images and no labels.
+MNIST contains 28×28 grayscale images in ten digit classes. This run uses stratified, disjoint splits of 48,000 training, 12,000 validation, and 10,000 test examples. The test set is untouched until final evaluation. Labels in contrastive pretraining are used only to construct splits and labelled budgets; batches contain two images and no labels.
 
 ## Methodology
 
@@ -28,7 +28,7 @@ The random-encoder probe uses the same frozen architecture and identical probe o
 
 ## Experimental Setup
 
-Mode: **quick**. Seeds actually executed: **[42]**. AdamW is used for neural models. Early stopping and hyperparameter selection use validation data only; test predictions are computed after training decisions. This is a smoke-test run and must not be interpreted as a general empirical conclusion. The full three-seed experiment was not executed in the CPU-only development environment.
+Mode: **full_reduced**. Seeds actually executed: **[42]**. AdamW is used for neural models. Early stopping and hyperparameter selection use validation data only; test predictions are computed after training decisions. Results aggregate 1 independently trained seeds: [42].
 
 ## Results
 
@@ -37,53 +37,55 @@ The table below is generated from the saved metrics; `n/a` standard deviations m
 <!-- BEGIN GENERATED TABLE -->
 | method               |   label_fraction |   accuracy |   precision_macro |   recall_macro |   f1_macro |
 |:---------------------|-----------------:|-----------:|------------------:|---------------:|-----------:|
-| Logistic regression  |           0.0100 |     0.7840 |            0.7859 |         0.7790 |     0.7786 |
-| Logistic regression  |           0.1000 |     0.8735 |            0.8735 |         0.8715 |     0.8717 |
-| Logistic regression  |           1.0000 |     0.9080 |            0.9071 |         0.9062 |     0.9063 |
-| Random encoder probe |           0.0100 |     0.0990 |            0.0264 |         0.1031 |     0.0230 |
-| Random encoder probe |           0.1000 |     0.2040 |            0.0595 |         0.1904 |     0.0849 |
-| Random encoder probe |           1.0000 |     0.2425 |            0.0993 |         0.2304 |     0.1160 |
-| SimCLR linear probe  |           0.0100 |     0.3820 |            0.3896 |         0.3744 |     0.3482 |
-| SimCLR linear probe  |           0.1000 |     0.4850 |            0.5144 |         0.4761 |     0.4323 |
-| SimCLR linear probe  |           1.0000 |     0.6945 |            0.6950 |         0.6872 |     0.6792 |
-| Supervised CNN       |           0.0100 |     0.4120 |            0.5081 |         0.4038 |     0.3602 |
-| Supervised CNN       |           0.1000 |     0.5740 |            0.6793 |         0.5636 |     0.5494 |
-| Supervised CNN       |           1.0000 |     0.9420 |            0.9473 |         0.9412 |     0.9416 |
+| Logistic regression  |           0.0100 |     0.8473 |            0.8467 |         0.8448 |     0.8449 |
+| Logistic regression  |           0.1000 |     0.8989 |            0.8977 |         0.8975 |     0.8975 |
+| Logistic regression  |           1.0000 |     0.9239 |            0.9230 |         0.9228 |     0.9228 |
+| Random encoder probe |           0.0100 |     0.2854 |            0.1458 |         0.2714 |     0.1803 |
+| Random encoder probe |           0.1000 |     0.2519 |            0.1038 |         0.2395 |     0.1314 |
+| Random encoder probe |           1.0000 |     0.3440 |            0.4315 |         0.3324 |     0.2412 |
+| SimCLR linear probe  |           0.0100 |     0.8390 |            0.8426 |         0.8371 |     0.8363 |
+| SimCLR linear probe  |           0.1000 |     0.8893 |            0.8893 |         0.8882 |     0.8879 |
+| SimCLR linear probe  |           1.0000 |     0.9471 |            0.9472 |         0.9465 |     0.9467 |
+| Supervised CNN       |           0.0100 |     0.8733 |            0.8829 |         0.8729 |     0.8713 |
+| Supervised CNN       |           0.1000 |     0.9234 |            0.9321 |         0.9226 |     0.9224 |
+| Supervised CNN       |           1.0000 |     0.9866 |            0.9870 |         0.9864 |     0.9866 |
 <!-- END GENERATED TABLE -->
 
-![Method comparison](../outputs/quick/figures/method_comparison.png)
+![Method comparison](../outputs/full_reduced/figures/method_comparison.png)
 
-![Direct pretraining control](../outputs/quick/figures/simclr_pretraining_gain.png)
+![Direct pretraining control](../outputs/full_reduced/figures/simclr_pretraining_gain.png)
 
-![Positive and mismatched view similarities](../outputs/quick/figures/positive_negative_similarity.png)
+![Positive and mismatched view similarities](../outputs/full_reduced/figures/positive_negative_similarity.png)
 
 Observed outcomes:
 
-- At 1% labels, the highest observed mean test accuracy was 0.7840 (Logistic regression). This is an observation, not proof of superiority.
-- At 10% labels, the highest observed mean test accuracy was 0.8735 (Logistic regression). This is an observation, not proof of superiority.
-- At 100% labels, the highest observed mean test accuracy was 0.9420 (Supervised CNN). This is an observation, not proof of superiority.
+- At 1% labels, the highest observed mean test accuracy was 0.8733 (Supervised CNN). This is an observation, not proof of superiority.
+- At 10% labels, the highest observed mean test accuracy was 0.9234 (Supervised CNN). This is an observation, not proof of superiority.
+- At 100% labels, the highest observed mean test accuracy was 0.9866 (Supervised CNN). This is an observation, not proof of superiority.
 
 Representation-learning control:
 
-- At 1% labels, SimCLR minus the random-encoder probe was +0.2830 accuracy. This isolates the contribution of pretraining.
-- At 10% labels, SimCLR minus the random-encoder probe was +0.2810 accuracy. This isolates the contribution of pretraining.
-- At 100% labels, SimCLR minus the random-encoder probe was +0.4520 accuracy. This isolates the contribution of pretraining.
+- At 1% labels, SimCLR minus the random-encoder probe was +0.5536 accuracy. This isolates the contribution of pretraining.
+- At 10% labels, SimCLR minus the random-encoder probe was +0.6374 accuracy. This isolates the contribution of pretraining.
+- At 100% labels, SimCLR minus the random-encoder probe was +0.6031 accuracy. This isolates the contribution of pretraining.
 
-Across the executed seeds, the mean positive-minus-mismatched cosine gap was 0.0064 for the random encoder and 0.3719 after SimCLR.
+Across the executed seeds, the mean positive-minus-mismatched cosine gap was 0.0063 for the random encoder and 0.4711 after SimCLR.
 
-Confusion matrices, PCA views, positive-versus-negative cosine distributions, and nearest-neighbor retrievals are stored under `outputs/quick/figures`. Labels in PCA and retrieval titles are used only after training for interpretation.
+Confusion matrices, PCA views, positive-versus-negative cosine distributions, and nearest-neighbor retrievals are stored under `outputs/full_reduced/figures`. Labels in PCA and retrieval titles are used only after training for interpretation.
 
 ## Discussion
 
-Differences across label budgets should be interpreted jointly with the supervised validation curves, contrastive loss, cosine diagnostic, neighbor retrieval, confusion matrices, and PCA geometry. A SimCLR probe above the identical random probe supports the claim that pretraining exposed linearly useful structure; it does not imply that the representation beats end-to-end supervision. A lower score would be evidence about this objective, augmentation policy, architecture, and training budget, not a general refutation of contrastive learning. The quick run is solely an integration check.
+Differences across label budgets should be interpreted jointly with the supervised validation curves, contrastive loss, cosine diagnostic, neighbor retrieval, confusion matrices, and PCA geometry. The large SimCLR-versus-random gains show that pretraining exposed linearly useful structure. SimCLR is already competitive with logistic regression at 1% and 10% labels and exceeds it at 100%, but the end-to-end supervised CNN remains best at every measured budget.
 
 ## Limitations
 
-MNIST is small, grayscale, centred, and far simpler than natural imagery. NT-Xent is batch-size sensitive. The compact architecture and short schedule may undertrain SimCLR. Quick mode has one seed and cannot quantify run-to-run uncertainty; even three full-mode seeds provide limited statistical power. Labelled validation data and unequal compute/image exposure prevent interpreting this as a pure compute-matched comparison. Logistic convergence warnings, if present, should also be inspected.
+MNIST is small, grayscale, centred, and far simpler than natural imagery. NT-Xent is batch-size sensitive, and this reduced schedule may undertrain SimCLR. The run uses 1 seed, so it cannot quantify run-to-run uncertainty; even three seeds would provide limited statistical power. Labelled validation data and unequal compute/image exposure prevent interpreting this as a pure compute-matched comparison. Logistic convergence warnings, if present, should also be inspected.
 
 ## Conclusions
 
-The saved results support only the budget-specific observations above. Claims about label efficiency require the full multi-seed experiment; theoretical expectations are not substituted for measurements.
+With 1% labels, the SimCLR probe reached 83.90%, compared with 28.54% for the identical frozen random encoder, 84.73% for logistic regression, and 87.33% for the end-to-end supervised CNN. SimCLR therefore gained 55.36 percentage points from pretraining while remaining 3.43 points below the CNN.
+
+With all labels, SimCLR reached 94.71%, exceeding logistic regression by 2.32 points but remaining 3.95 points below the supervised CNN. These results strongly support that contrastive pretraining learned linearly useful digit structure, including in the low-label condition. They do not establish that SimCLR is the best classifier or that it generally reduces label requirements, because only 1 seed was executed with this schedule.
 
 ## References
 

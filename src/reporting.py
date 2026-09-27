@@ -22,6 +22,15 @@ def write_result_fragments(results: pd.DataFrame, output_dir: Path, reports_dir:
 def write_report(results: pd.DataFrame, reports_dir: Path, mode: str, seeds: tuple[int, ...],
                  output_dir: Path | None = None) -> None:
     reports_dir.mkdir(parents=True, exist_ok=True)
+    output_dir = output_dir or Path("outputs") / mode
+    config_path = output_dir / "config.json"
+    config = json.loads(config_path.read_text(encoding="utf-8")) if config_path.exists() else {}
+    dataset_note = (
+        f"This run uses stratified, disjoint splits of {config['train_size']:,} training, "
+        f"{config['val_size']:,} validation, and {config['test_size']:,} test examples."
+        if config else
+        "This run uses stratified, disjoint train, validation, and test splits."
+    )
     caveat = ("This is a smoke-test run and must not be interpreted as a general empirical conclusion. "
               "The full three-seed experiment was not executed in the CPU-only development environment."
               if mode == "quick" else
@@ -32,7 +41,26 @@ def write_report(results: pd.DataFrame, reports_dir: Path, mode: str, seeds: tup
         ["accuracy", "precision_macro", "recall_macro", "f1_macro"]
     ].mean().reset_index()
     result_table = report_summary.to_markdown(index=False, floatfmt=".4f")
-    output_dir = output_dir or Path("outputs") / mode
+    accuracy = report_summary.pivot(index="method", columns="label_fraction", values="accuracy")
+    simclr = accuracy.loc["SimCLR linear probe"]
+    random_probe = accuracy.loc["Random encoder probe"]
+    supervised = accuracy.loc["Supervised CNN"]
+    logistic = accuracy.loc["Logistic regression"]
+    conclusion_text = (
+        f"With 1% labels, the SimCLR probe reached {simclr[0.01]:.2%}, compared with "
+        f"{random_probe[0.01]:.2%} for the identical frozen random encoder, "
+        f"{logistic[0.01]:.2%} for logistic regression, and {supervised[0.01]:.2%} for the "
+        f"end-to-end supervised CNN. SimCLR therefore gained "
+        f"{(simclr[0.01] - random_probe[0.01]) * 100:.2f} percentage points from pretraining "
+        f"while remaining {(supervised[0.01] - simclr[0.01]) * 100:.2f} points below the CNN.\n\n"
+        f"With all labels, SimCLR reached {simclr[1.0]:.2%}, exceeding logistic regression "
+        f"by {(simclr[1.0] - logistic[1.0]) * 100:.2f} points but remaining "
+        f"{(supervised[1.0] - simclr[1.0]) * 100:.2f} points below the supervised CNN. "
+        "These results strongly support that contrastive pretraining learned linearly useful "
+        "digit structure, including in the low-label condition. They do not establish that "
+        "SimCLR is the best classifier or that it generally reduces label requirements, because "
+        f"only {len(seeds)} {'seed was' if len(seeds) == 1 else 'seeds were'} executed with this schedule."
+    )
     similarity_records = []
     for path in sorted(output_dir.glob("similarity_seed_*.json")):
         similarity_records.append(json.loads(path.read_text(encoding="utf-8")))
@@ -76,7 +104,7 @@ An embedding space is useful when semantically related inputs admit a simple dow
 
 ## Dataset
 
-MNIST contains 28×28 grayscale images in ten digit classes. The quick protocol draws stratified, disjoint subsets of 12,000 training and 2,000 validation examples from the official training set and 2,000 examples from the official test set. The test set is untouched until final evaluation. Labels in contrastive pretraining are used only to construct splits and labelled budgets; batches contain two images and no labels.
+MNIST contains 28×28 grayscale images in ten digit classes. {dataset_note} The test set is untouched until final evaluation. Labels in contrastive pretraining are used only to construct splits and labelled budgets; batches contain two images and no labels.
 
 ## Methodology
 
@@ -116,15 +144,15 @@ Confusion matrices, PCA views, positive-versus-negative cosine distributions, an
 
 ## Discussion
 
-Differences across label budgets should be interpreted jointly with the supervised validation curves, contrastive loss, cosine diagnostic, neighbor retrieval, confusion matrices, and PCA geometry. A SimCLR probe above the identical random probe supports the claim that pretraining exposed linearly useful structure; it does not imply that the representation beats end-to-end supervision. A lower score would be evidence about this objective, augmentation policy, architecture, and training budget, not a general refutation of contrastive learning. The quick run is solely an integration check.
+Differences across label budgets should be interpreted jointly with the supervised validation curves, contrastive loss, cosine diagnostic, neighbor retrieval, confusion matrices, and PCA geometry. The large SimCLR-versus-random gains show that pretraining exposed linearly useful structure. SimCLR is already competitive with logistic regression at 1% and 10% labels and exceeds it at 100%, but the end-to-end supervised CNN remains best at every measured budget.
 
 ## Limitations
 
-MNIST is small, grayscale, centred, and far simpler than natural imagery. NT-Xent is batch-size sensitive. The compact architecture and short schedule may undertrain SimCLR. Quick mode has one seed and cannot quantify run-to-run uncertainty; even three full-mode seeds provide limited statistical power. Labelled validation data and unequal compute/image exposure prevent interpreting this as a pure compute-matched comparison. Logistic convergence warnings, if present, should also be inspected.
+MNIST is small, grayscale, centred, and far simpler than natural imagery. NT-Xent is batch-size sensitive, and this reduced schedule may undertrain SimCLR. The run uses {len(seeds)} seed, so it cannot quantify run-to-run uncertainty; even three seeds would provide limited statistical power. Labelled validation data and unequal compute/image exposure prevent interpreting this as a pure compute-matched comparison. Logistic convergence warnings, if present, should also be inspected.
 
 ## Conclusions
 
-The saved results support only the budget-specific observations above. Claims about label efficiency require the full multi-seed experiment; theoretical expectations are not substituted for measurements.
+{conclusion_text}
 
 ## References
 

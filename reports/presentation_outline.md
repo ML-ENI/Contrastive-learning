@@ -21,7 +21,7 @@
 
 ## 4. Results — 2–3 min
 
-- Show `outputs/quick/figures/method_comparison.png`; stress that quick mode is a smoke test.
+- Show `outputs/full_reduced/figures/method_comparison.png`; stress that quick mode is a smoke test.
 - Show representative confusion matrices and point out class-specific errors.
 - Show supervised curves and contrastive loss; distinguish optimization from generalization.
 

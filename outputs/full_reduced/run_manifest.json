@@ -1,0 +1,9 @@
+{
+  "status": "complete",
+  "mode": "full",
+  "device": "cpu",
+  "seeds_completed": [
+    42
+  ],
+  "test_used_for_selection": false
+}
