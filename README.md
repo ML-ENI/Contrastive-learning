@@ -51,7 +51,7 @@ Two notebooks serve different purposes:
 
 Both reuse the Python modules and work in VS Code or Colab. In Colab, upload or clone the repository, change into its root, and install the requirements first.
 
-The static GitHub Pages demo is generated from the executed presentation notebook at `docs/index.html`. It retains the notebook appearance and embedded outputs but hides helper-code inputs. Regenerate it after updating quick results with:
+The static GitHub Pages demo is generated from the executed presentation notebook at `docs/index.html`. It retains the notebook appearance and embedded outputs but hides helper-code inputs. `docs/language-toggle.js` provides the EN/ES header switch; English is the default. Regenerate the HTML after updating quick results with:
 
 ```bash
 jupyter nbconvert notebooks/presentation_contrastive_learning_mnist.ipynb \
